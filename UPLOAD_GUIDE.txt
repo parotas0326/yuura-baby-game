@@ -1,0 +1,81 @@
+ゆうら育成ゲーム GitHub Pages アップロード手順
+2026-10-11
+
+【最初に】
+このZIPには完成した静的ゲーム一式と本手順・確認レポートが入っています。
+ZIPをGitHubへ置くだけでは遊べません。必ずPCで解凍して中身をアップロードします。
+全43ファイル（ゲーム・ライセンス・設定41、手順とレポート2）。分割不要です。
+公開先の指定・GitHubへの接続がないため、この納品時点では公開URLは発行していません。
+
+【1 解凍】
+Windows：ZIPを右クリック→「すべて展開」。Mac：ZIPをダブルクリック。
+展開先を開き、index.html、style.css、script.js、assetsフォルダが見える階層に進みます。
+assetsの中身は移動・改名しないでください。画像はPNGのままです。
+元の完成版ZIPはバックアップとして保管してください。
+
+【2 リポジトリを作成】
+PCのブラウザでGitHubへログイン→右上「＋」→「New repository」。
+Repository name に yuura-game などの名前を入力します。
+GitHub Freeで公開する場合はPublicを選択します。公開された素材・ソースは他の人も閲覧できます。
+Add READMEをONにして「Create repository」を押します。
+既存リポジトリを使う場合は先に Code → Download ZIP でバックアップしてください。
+既存の無関係なファイルを削除しないでください。本一式と競合するindex.html等は更新対象です。
+
+【3 展開したファイルをアップロード】
+リポジトリのCode画面で「Add file」→「Upload files」。
+展開したフォルダそのものではなく、その中の index.html、style.css、script.js、assets、
+FONT-LICENSE.txt、UPLOAD_GUIDE.txt、TEST_REPORT.txt をまとめてドラッグします。
+assetsはフォルダごとドラッグして階層を保ちます。フォルダ内の画像を直下にばらまかないでください。
+.nojekyllが見える場合は一緒にアップロードしてください（空の設定ファイルです）。
+GitHubは1回100ファイル、ブラウザ経由1ファイル25MiBまで。本一式はいずれも範囲内です。
+アップロード完了を待ち、Commit messageに「Publish Yuura game」と入力。
+新規リポジトリならmainへCommit changes。保護ブランチの場合は新しいブランチにアップロードし、
+Pull requestを作成してmainにマージします。
+Code画面直下にindex.htmlがあること、assets/ui/icon-heart.png等が存在することを確認します。
+「YUURA_GAME_GITHUB_READY/index.html」のように一段深く置かないでください。
+
+.nojekyllが見えなかった場合：GitHubの「Add file」→「Create new file」で名前を .nojekyll とし、
+本文に static site と入力してmainへ保存しても同じように機能します。
+本ゲームにはビルド処理・npm・Git LFSは不要です。
+
+【4 Pagesを有効にする】
+リポジトリの「Settings」→左の「Pages」。
+Build and deployment の Source を「Deploy from a branch」にします。
+Branchは「main」、フォルダは「/(root)」を選び「Save」。
+しばらく待ち、Pages画面の「Visit site」を開きます。公開に最大10分程度かかる場合があります。
+URLの例：https://あなたのユーザー名.github.io/yuura-game/
+これは例です。実際のURLはPages画面に表示されたものを使ってください。
+github.comのCode画面やZIPのURLはゲームの公開URLではありません。
+
+【5 iPhone Safariで確認】
+1. PagesのURLをSafariで開きます。LINE等のアプリ内ブラウザからはSafariに切り替えます。
+2. 縦向きでTOP全体、3ボタン、髪・リボン・足が見えることを確認します。
+3. Safariの上下バーを表示した状態と隠れた状態で、横縦の不要なスクロールがないか確認します。
+4. ♪ OFFをタップしてONへ。音量を上げ、ゲーム操作で音・水音を確認。OFFで止まることも確認します。
+5. ミルクを開始。哺乳瓶を指で蛇口の下に運び、水の中で上下左右に振ります。
+   水の外・静止では冷えず、積極的な操作約6〜8秒で38℃前後になることを確認します。
+   指を離す・画面を切り替える・再び触る操作でドラッグが固着しないかも確認します。
+6. いないいないばあは長押し→離す操作、寝かしつけはお手本後の連続タップを確認します。
+7. 各ゲーム2回、合計6回を終え、結果から約1.8秒後に自動進化することを確認します。
+8. にっき・せっていを開閉し、点数と回数を確認します。
+9. URL末尾に ?dev=1 を付けた時だけDEVが出ることを確認します。
+10. PCでも同じURLを開き、マウスでドラッグ・押す/離す・クリックを確認します。
+
+【セーブ・図鑑についての重要な制限】
+受領した最新版には永続セーブと図鑑画面はありません。削除した機能ではありません。
+にっきはページを開いている間の記録です。再読み込み・終了でおせわ記録はリセットされます。
+今回の公開整理ではゲーム仕様を変更していないため、この動作は元版と同じです。
+セーブ・図鑑が実装された別の最新版がある場合は、そちらとの統合が必要です。
+
+【困ったとき】
+404：Pagesのmain / (root)、直下index.html、Actionsの公開処理成功、公開URLを確認。
+画像が出ない：assetsを階層ごとアップロードしたか、大文字小文字・ファイル名を確認。
+旧画面が残る：Actions完了後にSafariを再読み込み。必要ならプライベートタブで比較。
+初回読込が遅い：フォントを完全保持するためCSSは約9.6MiBあります。Wi-Fiでも確認してください。
+音が出ない：まず♪ONを指でタップしてからプレイ。端末の音量・音声出力先を確認。
+古いSafari：最新iOSに更新して再確認。この版はdvh・dialog・Pointer Events等の標準機能を使用します。
+
+【公式資料（2026-10-11確認）】
+https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository
+https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site
+https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
