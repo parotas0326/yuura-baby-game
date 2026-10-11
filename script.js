@@ -41,7 +41,27 @@ function openSettings(){
 }
 function openSettingsContent(){$('#settingSound').textContent='音を'+(muted?'ON':'OFF')+'にする';}
 const instructionsText={milk:'哺乳瓶を蛇口の水まで運び、流水の中で上下・左右にふろう！約6〜8秒が目安。水の外では冷えないよ。38℃になったら手をはなして「できた！」。',peek:'毎秒1回、ボタンを押し続けて、ゆうらが大喜びする瞬間に離そう！ピンクの♡までゲージが伸びたらチャンス。10回チャレンジ。',sleep:'「お手本」を見て、同じリズムでゆうらのまわりをタップ！「どうぞ！」の少し後から始めよう。3・4・5回の3セット。お手本中は入力できないよ。'};
-function instructions(k){if(!META[k]||count(k)>=2)return;stop();setScreen('instructions');const m=META[k];app.innerHTML=`<div class="game-wrap"><div class="game-head"><h1>${m.name}</h1><button id="back" class="tiny">もどる</button></div><div class="room ${m.room}"><div class="bubble">${count(k)+1}回目のおせわ ♡</div>${baby(k==='sleep'?'sleepy':'smile')}</div><div class="instruction-card"><span class="eyebrow">HOW TO PLAY</span><h2>${m.hint}</h2><p>${instructionsText[k]}</p><button id="start" class="primary wide">はじめる！</button><p class="muted center" style="margin:14px 0 0">${k==='sleep'?'約10〜11秒 / 3セット':'10秒'} · PC / タッチ対応</p></div></div>`;$('#back').onclick=renderHome;$('#start').onclick=()=>start(k);}
+const RULES={
+ milk:{lines:['哺乳瓶を流水の中でフリフリ！','10秒以内に38℃まで冷やそう！'],goal:'10秒 · 目標38℃',detail:'PERFECT：38℃ ／ CLEAR：36〜40℃（38℃以外）<br>MISS：それ以外',tip:'水の外では冷えないよ。38℃になったら手を離して「できた！」'},
+ peek:{lines:['顔をかくして、いないいない……','タイミングよく指を離して、ばあ！'],goal:'10秒 · 10回チャレンジ',detail:'大喜びの瞬間に離そう！<br>PERFECT：20点以上 ／ CLEAR：9〜19点 ／ MISS：8点以下',tip:'ボタンを長押し → ピンクの♡にゲージが届いたら離す。毎秒1回だよ。'},
+ sleep:{lines:['トントンのリズムをおぼえよう！','お手本と同じリズムでタップしてね！'],goal:'約10〜11秒 · 3・4・5拍の3セット',detail:'お手本を見る・聞く → おぼえる →「どうぞ！」でタップ',tip:'ゆうらのまわりをタップ！ お手本中は入力できないよ。音OFFでも光る合図で遊べるよ。'}
+};
+function instructions(k){
+ if(!META[k]||count(k)>=2)return;stop();setScreen('instructions');const m=META[k],r=RULES[k];
+ const demo=k==='milk'?`<div class="demo-stream"></div><img class="demo-bottle" src="${crop('bottle')}" alt="流水の中で哺乳瓶を上下に振る操作例"><span class="demo-arrows">↕</span>`:k==='peek'?`${baby('joy','demo-face')}<img class="demo-hands" src="${crop('hands')}" alt="長押しで顔を隠して、指を離すとばあ"><span class="demo-gesture">長押し → はなす ♡</span>`:`${baby('sleepy','demo-face')}<img class="demo-pat" src="${crop('pat')}" alt="お手本のあと、同じリズムでタップ"><span class="demo-notes">♪　♪　♪</span><span class="demo-gesture">お手本 → おぼえる → トントン</span>`;
+ app.innerHTML=`<section class="rules-screen"><div class="rules-heading"><span class="eyebrow">HOW TO PLAY · ${count(k)+1}回目</span><h1>${m.name}</h1><button id="back" class="tiny">TOPにもどる</button></div><div class="rules-demo demo-${k}" aria-label="操作のお手本（ゲームはまだ始まりません）">${demo}<span class="demo-tag">操作のお手本</span></div><div class="rules-copy"><p class="rules-goal">${r.goal}</p><h2>${r.lines.join('<br>')}</h2><p class="rules-tip">${r.tip}</p><p class="rules-detail">${r.detail}</p></div><button id="start" class="primary wide">ゲームスタート！</button></section>`;
+ $('#back').onclick=renderHome;$('#start').onclick=()=>beginCountdown(k);
+}
+function beginCountdown(k){
+ if(screen!=='instructions'||!META[k]||count(k)>=2)return;
+ $('#start').disabled=true;setScreen('countdown');
+ const overlay=document.createElement('div');overlay.className='countdown-overlay';overlay.innerHTML='<div class="countdown-sparkles" aria-hidden="true">✧　♡　✧</div><div class="countdown-number" role="status" aria-live="assertive"></div><p>もうすぐ はじまるよ！</p><button class="tiny countdown-back">TOPにもどる</button>';app.append(overlay);overlay.querySelector('button').onclick=renderHome;
+ let elapsed=0,previous=performance.now(),step=-1;const labels=['3','2','1','START!'];
+ const draw=()=>{const next=Math.min(3,Math.floor(elapsed/700));if(next===step)return;step=next;const node=overlay.querySelector('.countdown-number');node.textContent=labels[step];node.className='countdown-number '+(step===3?'countdown-start':'');node.style.animation='none';void node.offsetWidth;node.style.animation='';tone(step===3?1040:620+step*100,step===3?.18:.07);};
+ draw();
+ const frame=now=>{if(screen!=='countdown')return;const paused=document.hidden||$('#devDialog').open;if(!paused)elapsed+=Math.max(0,now-previous);previous=now;if(elapsed>=2800){start(k);return;}draw();raf=requestAnimationFrame(frame);};
+ raf=requestAnimationFrame(frame);
+}
 function gameShell(k,inside,controls){const m=META[k];app.innerHTML=`<section class="game-wrap"><div class="game-head"><div><span class="eyebrow">CARE ${history.length+1} / 6</span><h1>${m.name}</h1></div><div class="timer-label">のこり <b id="seconds">10.0</b> 秒</div></div><div class="time-track"><i id="timebar"></i></div><div class="room game-room ${m.room}" id="arena">${inside}</div><div class="controls">${controls}</div><p class="muted center">${k==='milk'?'表示38℃でPERFECT / 36〜40℃でCLEAR':k==='peek'?'押す → 大喜びの瞬間に離す！ / 1秒に1回':'お手本を見る → 「どうぞ！」で同じリズムをタップ'}</p></section>`;}
 function start(k){if(count(k)>=2)return renderHome();stop();setScreen('playing');tone(740);active={game:k,ended:false};clock=0;
  if(k==='milk')setupMilk();if(k==='peek')setupPeek();if(k==='sleep')setupSleep();lastTick=performance.now();raf=requestAnimationFrame(tick);}
