@@ -1,16 +1,16 @@
 ゆうら育成ゲーム GitHub Pages アップロード手順
-2026-10-14
+2026-10-15
 
 【最初に】
 このZIPにはベビ期・成長期5ゲームと本手順・確認レポートが入っています。
-大人24職への進化・カード表示・にっき・図鑑を実装しています。天使・悪魔は画像と秘密枠を登録済みですが、全コンプ後の獲得方法は正式条件の確認待ちです。
+大人24職への進化・カード表示・にっき・図鑑を実装しています。天使・悪魔の正式条件も実装済みです。通常28種コンプ後、天才ルート30点で天使、悪ガキルート30点で悪魔を別々に獲得できます。
 ZIPをGitHubへ置くだけでは遊べません。必ずPCで解凍して中身をアップロードします。
-全73ファイル（手順・レポート・ライセンスも含む）。分割不要です。
+全75ファイル（手順・レポート・ライセンスも含む）。分割不要です。
 公開先の指定・GitHubへの接続がないため、この納品時点では公開URLは発行していません。
 
 【1 解凍】
 Windows：ZIPを右クリック→「すべて展開」。Mac：ZIPをダブルクリック。
-展開先を開き、index.html、style.css、script.js、growth.css、growth.js、growth-assets.js、adult-evolution.js、assetsフォルダが見える階層に進みます。
+展開先を開き、index.html、style.css、ulife.js、script.js、growth.css、growth.js、growth-assets.js、adult-evolution.js、assetsフォルダが見える階層に進みます。
 assetsの中身は移動・改名しないでください。画像はPNGとWebPです。形式も変更しないでください。
 元の完成版ZIPはバックアップとして保管してください。
 
@@ -24,7 +24,7 @@ Add READMEをONにして「Create repository」を押します。
 
 【3 展開したファイルをアップロード】
 リポジトリのCode画面で「Add file」→「Upload files」。
-展開したフォルダそのものではなく、その中の index.html、style.css、script.js、growth.css、growth.js、growth-assets.js、adult-evolution.js、assets、
+展開したフォルダそのものではなく、その中の index.html、style.css、ulife.js、script.js、growth.css、growth.js、growth-assets.js、adult-evolution.js、assets、
 FONT-LICENSE.txt、UPLOAD_GUIDE.txt、TEST_REPORT.txt をまとめてドラッグします。
 assetsはフォルダごとドラッグして階層を保ちます。フォルダ内の画像を直下にばらまかないでください。
 .nojekyllが見える場合は一緒にアップロードしてください（空の設定ファイルです）。
@@ -56,7 +56,7 @@ github.comのCode画面やZIPのURLはゲームの公開URLではありません
 5. ミルクを開始。哺乳瓶を指で蛇口の下に運び、水の中で上下左右に振ります。
    水の外・静止では冷えず、積極的な操作約6〜8秒で38℃前後になることを確認します。
    指を離す・画面を切り替える・再び触る操作でドラッグが固着しないかも確認します。
-6. いないいないばあは長押し→離す操作、寝かしつけはお手本後の連続タップを確認します。
+6. いないいないばあは開始前のお手本（いないいない…→バア！）を確認。最初の長押しで10秒が始まり、合図で指を離します。待機で放置しても最初の判定を失わないことを確認。寝かしつけはお手本後の連続タップです。
 7. 各ゲーム2回、合計6回を終え、結果から約1.8秒後に自動進化することを確認します。
 8. にっき・せっていを開閉し、点数と回数を確認します。
 9. URL末尾に ?dev=1 を付けた時だけDEVが出ることを確認します。
@@ -70,7 +70,7 @@ github.comのCode画面やZIPのURLはゲームの公開URLではありません
 DEVは ?dev=1 のURLのみ。通常プレイとは独立した保存です。
 重要：15回後、結果1.8秒→成長演出→対応する大人カードを表示します。
 最高能力が同点なら、その候補能力の中で最後に遊んだゲームを優先します。複合・裏進化が先です。
-15回分の記録と進化結果は保存されます。秘密2種の獲得条件の未確定部分はTEST_REPORT.txtを確認してください。
+15回分の記録と進化結果は保存されます。全30種の図鑑と秘密2種の条件はTEST_REPORT.txtを確認してください。
 更新時は今回ZIPの全ファイルを同じコミットでアップロードしてください。
 JS/CSS/素材の一部だけを更新すると版が混在するため避けてください。
 
@@ -94,7 +94,7 @@ JS/CSS/素材の一部だけを更新すると版が混在するため避けて�
 404：Pagesのmain / (root)、直下index.html、Actionsの公開処理成功、公開URLを確認。
 画像が出ない：assetsを階層ごとアップロードしたか、大文字小文字・ファイル名を確認。
 旧画面が残る：Actions完了後にSafariを再読み込み。必要ならプライベートタブで比較。
-初回読込が遅い：フォントを完全保持するためCSSは約9.6MiBあります。Wi-Fiでも確認してください。
+初回読込が遅い：LIGHT版の軽量フォント・WebP画像を維持しています。Wi-Fiでも確認してください。
 音が出ない：まず♪ONを指でタップしてからプレイ。端末の音量・音声出力先を確認。
 古いSafari：最新iOSに更新して再確認。この版はdvh・dialog・Pointer Events等の標準機能を使用します。
 
@@ -102,3 +102,12 @@ JS/CSS/素材の一部だけを更新すると版が混在するため避けて�
 https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository
 https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site
 https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+
+【今回の修正で確認する点】
+・ベビ/ガキ/悪ガキ/天才の吹き出しが変わり、長いセリフも全文表示されること。
+・ミルク瓶の背後にピンクの四角がないこと。
+・5ゲームの操作図、顔を隠す手と「いないいない…」「バア！」を確認。
+・26種類の大人カードに隣の絵が入らず、名前が自然に表示されること。
+・通常28種の図鑑解放を維持したまま育て直せること。
+・天才30点で天使、別育成の悪ガキ30点で悪魔。29点以下や未コンプでは通常進化になること。
+・DEVの「通常28種を解放」はテスト用保存だけを更新します。通常プレイには影響しません。
