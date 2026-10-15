@@ -11,8 +11,8 @@ const baseIds=['baby','gaki','tensai','akugaki'];
 function collectionComplete(collection={}){return baseIds.every(id=>(collection.seen||[]).includes(id))&&names.every(n=>(collection.album||[]).some(e=>e.name===n));}
 const secretPolicy={status:'confirmed',normalSpecies:28,requiredTotal:30,routes:{tensai:'天使',akugaki:'悪魔'}};
 // Display crop is inside each source cell, and never reaches the neighboring card.
-for(const a of Object.values(art)){const [x,y,w,h]=a.rect;if(a.category==='secret')a.displayRect=[x+18,y+32,w-24,718];else {const col=Math.round(x/350),left=col===3?28:col===2?16:10,end=a.category==='genius'?407:a.category==='bad'&&y>0?400:390;a.displayRect=[x+left,y+32,w-left-4,end-32];}}
-art['アイドル'].sheet='assets/adults/idol-corrected.webp';art['アイドル'].rect=[0,0,700,900];art['アイドル'].size=[700,900];art['アイドル'].displayRect=[56,64,636,708];
+for(const a of Object.values(art)){const [x,y,w,h]=a.rect;const left=a.category==='secret'?12:Math.round(x/350)===3?28:Math.round(x/350)===2?16:4;const top=a.category==='secret'?0:y>0?(a.category==='genius'?24:12):4;const end=a.category==='secret'?752:a.category==='genius'?(y?410:403):a.category==='bad'?(y?390:380):(y?388:380);a.displayRect=[x+left,y+top,w-left-4,end-top];}
+art['アイドル'].sheet='assets/adults/idol-corrected.webp';art['アイドル'].rect=[0,0,700,900];art['アイドル'].size=[700,900];art['アイドル'].displayRect=[56,8,636,750];
 function resolve(route,scores,records=[],collection={}){
  if(!['gaki','tensai','akugaki'].includes(route)||!Array.isArray(scores)||scores.length!==5||scores.some(n=>!Number.isInteger(n)||n<0)||scores.reduce((a,b)=>a+b,0)>30)return {status:'pending',reason:'育成記録の値を確認してください',candidates:[],version};
  const total=scores.reduce((a,b)=>a+b,0),[head,body,hand,charm,kind]=scores;
