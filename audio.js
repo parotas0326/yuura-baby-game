@@ -22,11 +22,11 @@ window.UlifeAudio=(()=>{
   if(!enabled||!unlocked||document.hidden||!buffers[key]||context?.state!=='running')return;
   const now=performance.now();if(now-(recent[key]??-Infinity)<80)return;
   if(key==='miss'&&now-(recent.wrong??-Infinity)<300)return;
-  recent[key]=now;const s=context.createBufferSource(),gain=context.createGain();s.buffer=buffers[key];s.playbackRate.value=1;gain.gain.value=key==='peek'?.55:.45;s.connect(gain);gain.connect(context.destination);voices.add(s);s.onended=()=>{voices.delete(s);s.disconnect();gain.disconnect();};s.start();
+  recent[key]=now;for(const voice of voices){try{voice.stop();}catch{}}voices.clear();const s=context.createBufferSource(),gain=context.createGain();s.buffer=buffers[key];s.playbackRate.value=1;gain.gain.value=key==='peek'?.55:.45;s.connect(gain);gain.connect(context.destination);voices.add(s);s.onended=()=>{voices.delete(s);s.disconnect();gain.disconnect();};s.start();
  }
  document.addEventListener('pointerdown',unlock,{capture:true,passive:true});
  document.addEventListener('keydown',unlock,{capture:true});
- document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled||b.matches('#sound,#settingSound,#gSound,#titleSound,#peekButton,#tapZone,#gJump,#gShutter,[data-answer]')||b.closest('#arena'))return;se('confirm');},true);
+ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled||b.matches('#sound,#settingSound,#gSound,#titleSound,#peekButton,#tapZone,#gJump,#gShutter,#gConfirm,[data-answer]')||b.closest('#arena'))return;se('confirm');},true);
  document.addEventListener('visibilitychange',()=>{if(document.hidden){music.pause();for(const s of voices){try{s.stop();}catch{}}}else play();});
  window.addEventListener('pagehide',()=>music.pause());window.addEventListener('pageshow',play);
  prepare();
