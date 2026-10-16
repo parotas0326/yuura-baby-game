@@ -1,9 +1,11 @@
-uLife! GitHub Pages公開手順
-1. ULIFE_GAME_RESTORED_FINAL_20261016.zipを解凍。
-2. index.html、CSS、JavaScript、assetsなど全87ファイルを既存Pages公開フォルダへ上書き。
-3. ZIPそのものではなく、解凍した中身をコミットしてください。
-4. Pages更新完了後、同じ公開URLを開き直し、タイトルの「つづきから」で再開。
-5. iPhone Safari実機でも表示・操作・音声・保存再開を確認してください。
-同じブラウザ・同じサイトのlocalStorageにセーブがあります。サイトデータは削除しないでください。
-新しいドメインや別ブラウザには自動移行されません。DEV保存は通常プレイと別です。
-変更・素材・テスト・未確認事項はTEST_REPORT.txtを参照。
+uLife! 音響完成版 GitHub Pages公開手順
+1. ULIFE_GAME_COMPLETE_WITH_AUDIO_20261016.zipを解凍。
+2. 中のindex.html、CSS、JavaScript、assetsなど全99ファイルを既存のPages公開フォルダへ配置。
+3. ZIPそのものではなく解凍した中身をコミット。index.htmlが公開ルートにあることを確認。
+4. Pagesの更新完了後、同じURLで再読み込みし「つづきから」で再開。
+5. 設定で音をONにしてタップ。ブラウザの自動再生制限により操作前は無音です。
+6. iPhone Safari実機でBGM・効果音・保存再開を最終確認してください。
+セーブは従来と同じブラウザ・同じサイトのlocalStorageにあります。サイトデータを削除しないでください。
+別ドメイン・別ブラウザへセーブは自動移行されません。DEV保存は本番と分離したままです。
+本編BGM1.0倍、通常ミニゲーム1.5倍、寝かしつけ0.5倍。SEは常に等速です。
+古いSafari等でOGG非対応の場合はBGMが鳴りません。詳細はTEST_REPORT.txtを参照。
