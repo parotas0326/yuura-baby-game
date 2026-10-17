@@ -23,3 +23,11 @@ SE9種類の呼び出し、全SEソース速度1.0、失敗シャッターでshu
 全JS静的検索でも旧電子音・流水音の生成処理なし。JS例外0件、HTTP読み込みエラー0件。
 未確認：iPhone Safari実機、実スピーカーでの聴感、GitHub Pages公開後。
 全進化ルートの通しプレイは今回再実施していない。OGG対応は使用ブラウザに依存。
+
+2026-10-17 final adjustments:
+- Growth: 10 care actions, up to 20 points, 24 adult professions reachable under 10-action point allocations (automated rule enumeration).
+- Hidden and ultra-hidden evolution scaled to 16+ / target 10+, ultra target 17+.
+- Secret angel/devil 20/20 points across 10 actions with the established collection prerequisite.
+- Legacy v3 save format retained; prior completed adult results/album retained; no data deletion.
+- Audio: 4 approved BGM tracks at fixed 1.0x; mix balanced by track. 9 approved SEs: deferred WebAudio initialization until user gesture and HTMLAudio fallback.
+- Syntax verification: passed via node --check. iPhone Safari real-device playback not directly tested.

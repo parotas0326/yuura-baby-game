@@ -1,35 +1,69 @@
 'use strict';
-// Audio only: no game state, scoring, or save keys are owned by this module.
+// Only the approved 4 BGM files and 9 SE files are played. No synthesized sounds.
 window.UlifeAudio=(()=>{
  const root='assets/audio/';
  const tracks={opening:'uLife_opening_audio.ogg',main:'beloved_monster.ogg',minigame:'uLife_minigame_bgm.ogg',lullaby:'uLife_lullaby_bgm.ogg'};
- const trackVolumes={opening:.62,main:.25,minigame:.29,lullaby:.16};
+ // Volume is program-level (0..1). Different masters have different perceived loudness.
+ const volumes={opening:.90,main:.25,minigame:.68,lullaby:.52};
  const files={shutter:'カメラのシャッター1.mp3',tap:'水滴2.mp3',correct:'クイズ正解2.mp3',wrong:'クイズ不正解1.mp3',land:'ジャンプの着地.mp3',peek:'「ばあ！」.mp3',confirm:'決定ボタンを押す12.mp3',drop:'拳銃を落とす.mp3',miss:'ニュッ2.mp3'};
- const music=new Audio();music.loop=true;music.volume=.25;music.preload='auto';
- let enabled=false,unlocked=false,track='',rate=1,context=null,loading=null;
- const buffers={},voices=new Set(),recent={};
+ const volumesSE={shutter:.95,tap:.95,correct:.8,wrong:.8,land:.95,peek:.85,confirm:.65,drop:.95,miss:.8};
+ const music=new Audio();music.loop=true;music.preload='auto';
+ let enabled=false,unlocked=false,track='',context=null,loading=null;
+ const buffers={},fallback={},voices=new Set(),recent={};
+ function initContext(){
+  if(context)return;
+  try{context=new(window.AudioContext||window.webkitAudioContext)();}catch(e){console.warn('SE WebAudio unavailable',e);}
+ }
  function prepare(){
   if(loading)return loading;
-  try{context=new(window.AudioContext||window.webkitAudioContext)();}catch{return Promise.resolve();}
+  initContext();
   loading=Promise.all(Object.entries(files).map(async([key,file])=>{
-   try{const r=await fetch(root+encodeURIComponent(file));if(!r.ok)throw Error(r.status);buffers[key]=await context.decodeAudioData(await r.arrayBuffer());}catch(e){console.warn('uLife SE unavailable:',key,e);}
-  }));return loading;
+   const url=root+encodeURIComponent(file);
+   const audio=new Audio(url);audio.preload='auto';fallback[key]=audio;
+   if(!context)return;
+   try{const response=await fetch(url);if(!response.ok)throw Error(response.status);buffers[key]=await context.decodeAudioData(await response.arrayBuffer());}
+   catch(e){console.warn('SE decoding failed, using HTML audio:',key,e);}
+  }));
+  return loading;
  }
- function play(){if(!enabled||!unlocked||document.hidden||!track)return;music.playbackRate=rate;const p=music.play();if(p)p.catch(()=>{/* Retry only on the next gesture/scene, never block gameplay. */});}
- function scene(name,game){const next=['title','intro'].includes(name)?'opening':name==='playing'?(game==='sleep'?'lullaby':'minigame'):'main';rate=1;if(track!==next){music.pause();track=next;music.src=root+tracks[next];music.load();}music.volume=trackVolumes[next];music.playbackRate=1;play();}
- function setEnabled(value){enabled=!!value;if(enabled){prepare();play();}else{music.pause();for(const s of voices){try{s.stop();}catch{}}voices.clear();}}
- function unlock(){unlocked=true;prepare();if(context?.state==='suspended')context.resume().catch(()=>{});play();}
+ function play(){if(!enabled||!unlocked||document.hidden||!track)return;const result=music.play();result?.catch(e=>console.warn('BGM playback blocked',e));}
+ function scene(name,game){
+  const next=['title','intro'].includes(name)?'opening':name==='playing'?(game==='sleep'?'lullaby':'minigame'):'main';
+  if(track!==next){music.pause();track=next;music.src=root+tracks[next];music.load();}
+  music.playbackRate=1;music.volume=volumes[next];play();
+ }
+ function stopVoices(){for(const source of voices){try{source.stop();}catch{}}voices.clear();for(const a of Object.values(fallback)){try{a.pause();a.currentTime=0;}catch{}}}
+ function setEnabled(value){enabled=!!value;if(enabled){if(unlocked)prepare();play();}else{music.pause();stopVoices();}}
+ function unlock(){
+  unlocked=true;
+  prepare();
+  if(context?.state==='suspended')context.resume().catch(e=>console.warn('SE context resume failed',e));
+  play();
+ }
+ function htmlSE(key){
+  const original=fallback[key]||new Audio(root+encodeURIComponent(files[key]));
+  const a=original.paused?original:original.cloneNode(true);
+  a.volume=volumesSE[key];a.playbackRate=1;
+  try{a.currentTime=0;}catch{}
+  const promise=a.play();promise?.catch(e=>console.warn('SE play blocked',key,e));
+ }
  function se(key){
-  if(!enabled||!unlocked||document.hidden||!buffers[key]||context?.state!=='running')return;
-  const now=performance.now();if(now-(recent[key]??-Infinity)<(key==='tap'?35:80))return;
+  if(!enabled||!unlocked||document.hidden||!files[key])return;
+  const now=performance.now();if(now-(recent[key]??-Infinity)<(key==='tap'?45:90))return;
   if(key==='miss'&&now-(recent.wrong??-Infinity)<300)return;
-  recent[key]=now;for(const voice of voices){try{voice.stop();}catch{}}voices.clear();const s=context.createBufferSource(),gain=context.createGain();s.buffer=buffers[key];s.playbackRate.value=1;gain.gain.value=key==='tap'?.95:key==='peek'?.55:.45;s.connect(gain);gain.connect(context.destination);voices.add(s);s.onended=()=>{voices.delete(s);s.disconnect();gain.disconnect();};s.start();
+  recent[key]=now;
+  if(context&&context.state==='running'&&buffers[key]){
+   try{const source=context.createBufferSource(),gain=context.createGain();source.buffer=buffers[key];gain.gain.value=volumesSE[key];source.connect(gain);gain.connect(context.destination);voices.add(source);source.onended=()=>{voices.delete(source);source.disconnect();gain.disconnect();};source.start(0);return;}
+   catch(e){console.warn('SE WebAudio error',key,e);}
+  }
+  // iOS fallback while the decoded buffer is loading or AudioContext remains suspended.
+  htmlSE(key);
  }
  document.addEventListener('pointerdown',unlock,{capture:true,passive:true});
+ document.addEventListener('touchstart',unlock,{capture:true,passive:true});
  document.addEventListener('keydown',unlock,{capture:true});
  document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled||b.matches('#sound,#settingSound,#gSound,#titleSound,#peekButton,#tapZone,#gJump,#gShutter,#gConfirm,[data-answer]')||b.closest('#arena'))return;se('confirm');},true);
- document.addEventListener('visibilitychange',()=>{if(document.hidden){music.pause();for(const s of voices){try{s.stop();}catch{}}}else play();});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){music.pause();stopVoices();}else{if(context?.state==='suspended')context.resume().catch(()=>{});play();}});
  window.addEventListener('pagehide',()=>music.pause());window.addEventListener('pageshow',play);
- prepare();
- return {scene,setEnabled,se,ready:()=>loading,status:()=>({enabled,unlocked,track,rate,paused:music.paused,time:music.currentTime,seReady:Object.keys(buffers).length})};
+ return {scene,setEnabled,se,ready:()=>loading||Promise.resolve(),status:()=>({enabled,unlocked,track,paused:music.paused,time:music.currentTime,seReady:Object.keys(buffers).length,context:context?.state})};
 })();
